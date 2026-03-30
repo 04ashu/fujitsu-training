@@ -1,6 +1,7 @@
 package com.training.user.repository;
 
 import com.training.user.entity.User;
+import com.training.user.exception.UserNotFoundException;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -16,7 +17,7 @@ public class UserRepository {
                 .anyMatch(u -> Objects.equals(u.getId(), user.getId()));
 
         if (exists) {
-            return null; // or throw exception (later)
+            throw new IllegalArgumentException("User with ID already exists: " + user.getId());
         }
 
         userList.add(user);
@@ -30,7 +31,8 @@ public class UserRepository {
     public User getUserById(String id) {
         return userList.stream()
                 .filter(user -> user.getId().equals(id))
-                .findFirst().orElse(null);
+                .findFirst().orElseThrow(() ->
+                        new UserNotFoundException("User not found with id: " + id));
     }
 
     public List<User> getUniqueUsers(){
